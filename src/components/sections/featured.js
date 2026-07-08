@@ -4,6 +4,8 @@ import { GatsbyImage, getImage } from 'gatsby-plugin-image';
 import styled from 'styled-components';
 import sr from '@utils/sr';
 import { srConfig } from '@config';
+import { useI18n } from '@context/AppContext';
+import { filterByLang } from '@utils';
 import { Icon } from '@components/icons';
 import { usePrefersReducedMotion } from '@hooks';
 
@@ -176,8 +178,8 @@ const StyledProject = styled.li`
     }
 
     strong {
-      color: var(--white);
-      font-weight: normal;
+      color: var(--green);
+      font-weight: 600;
     }
   }
 
@@ -300,6 +302,39 @@ const StyledProject = styled.li`
         filter: grayscale(100%) contrast(1) brightness(50%);
       }
     }
+
+    /* In light theme the navy/screen duotone overlay washes the image out to
+       white. Show the image in full color by default and fade it on hover to
+       reveal the green accent behind it. */
+    html[data-theme='light'] & a {
+      background-color: var(--green);
+    }
+
+    html[data-theme='light'] & a:hover,
+    html[data-theme='light'] & a:focus {
+      background-color: var(--green);
+    }
+
+    html[data-theme='light'] & a:before {
+      display: none;
+    }
+
+    html[data-theme='light'] & .img {
+      mix-blend-mode: normal;
+      filter: none;
+      opacity: 0.75;
+      transition: var(--transition);
+
+      @media (max-width: 768px) {
+        filter: none;
+      }
+    }
+
+    html[data-theme='light'] & a:hover .img,
+    html[data-theme='light'] & a:focus .img {
+      filter: none;
+      opacity: 1;
+    }
   }
 `;
 
@@ -308,7 +343,7 @@ const Featured = () => {
     {
       featured: allMarkdownRemark(
         filter: { fileAbsolutePath: { regex: "/content/featured/" } }
-        sort: { fields: [frontmatter___date], order: ASC }
+        sort: { frontmatter: { date: ASC } }
       ) {
         edges {
           node {
@@ -323,6 +358,7 @@ const Featured = () => {
               github
               external
               cta
+              lang
             }
             html
           }
@@ -331,10 +367,12 @@ const Featured = () => {
     }
   `);
 
-  const featuredProjects = data.featured.edges.filter(({ node }) => node);
+  const allFeatured = data.featured.edges.filter(({ node }) => node);
   const revealTitle = useRef(null);
   const revealProjects = useRef([]);
   const prefersReducedMotion = usePrefersReducedMotion();
+  const { lang, t } = useI18n();
+  const featuredProjects = filterByLang(allFeatured, lang);
 
   useEffect(() => {
     if (prefersReducedMotion) {
@@ -348,7 +386,7 @@ const Featured = () => {
   return (
     <section id="projects">
       <h2 className="numbered-heading" ref={revealTitle}>
-        Some Things I’ve Built
+        {t('featured.heading')}
       </h2>
 
       <StyledProjectsGrid>

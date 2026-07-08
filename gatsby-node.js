@@ -7,6 +7,21 @@
 const path = require('path');
 const _ = require('lodash');
 
+// Explicitly define optional frontmatter fields so queries don't fail when no
+// content currently uses them (e.g. mobile app links or a project's company).
+exports.createSchemaCustomization = ({ actions }) => {
+  const { createTypes } = actions;
+  createTypes(`
+    type MarkdownRemarkFrontmatter {
+      ios: String
+      android: String
+      company: String
+      cta: String
+      lang: String
+    }
+  `);
+};
+
 exports.createPages = async ({ actions, graphql, reporter }) => {
   const { createPage } = actions;
   const postTemplate = path.resolve(`src/templates/post.js`);
@@ -16,7 +31,7 @@ exports.createPages = async ({ actions, graphql, reporter }) => {
     {
       postsRemark: allMarkdownRemark(
         filter: { fileAbsolutePath: { regex: "/content/posts/" } }
-        sort: { order: DESC, fields: [frontmatter___date] }
+        sort: { frontmatter: { date: DESC } }
         limit: 1000
       ) {
         edges {
@@ -28,7 +43,7 @@ exports.createPages = async ({ actions, graphql, reporter }) => {
         }
       }
       tagsGroup: allMarkdownRemark(limit: 2000) {
-        group(field: frontmatter___tags) {
+        group(field: { frontmatter: { tags: SELECT } }) {
           fieldValue
         }
       }
@@ -48,7 +63,9 @@ exports.createPages = async ({ actions, graphql, reporter }) => {
     createPage({
       path: node.frontmatter.slug,
       component: postTemplate,
-      context: {},
+      context: {
+        slug: node.frontmatter.slug,
+      },
     });
   });
 
@@ -95,8 +112,10 @@ exports.onCreateWebpackConfig = ({ stage, loaders, actions }) => {
       alias: {
         '@components': path.resolve(__dirname, 'src/components'),
         '@config': path.resolve(__dirname, 'src/config'),
+        '@context': path.resolve(__dirname, 'src/context'),
         '@fonts': path.resolve(__dirname, 'src/fonts'),
         '@hooks': path.resolve(__dirname, 'src/hooks'),
+        '@i18n': path.resolve(__dirname, 'src/i18n'),
         '@images': path.resolve(__dirname, 'src/images'),
         '@pages': path.resolve(__dirname, 'src/pages'),
         '@styles': path.resolve(__dirname, 'src/styles'),

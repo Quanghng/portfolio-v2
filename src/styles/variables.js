@@ -17,6 +17,8 @@ const variables = css`
     --pink: #f57dff;
     --blue: #57cbff;
 
+    --nav-bg: rgba(10, 25, 47, 0.85);
+
     --font-sans: 'Calibre', 'Inter', 'San Francisco', 'SF Pro Text', -apple-system, system-ui,
       sans-serif;
     --font-mono: 'SF Mono', 'Fira Code', 'Fira Mono', 'Roboto Mono', monospace;
@@ -47,6 +49,23 @@ const variables = css`
     --ham-after: bottom 0.1s ease-in 0.25s, transform 0.22s cubic-bezier(0.55, 0.055, 0.675, 0.19);
     --ham-after-active: bottom 0.1s ease-out,
       transform 0.22s cubic-bezier(0.215, 0.61, 0.355, 1) 0.12s;
+  }
+
+  html[data-theme='light'] {
+    --dark-navy: #eef2fb;
+    --navy: #ffffff;
+    --light-navy: #eef2f9;
+    --lightest-navy: #dfe6f3;
+    --navy-shadow: rgba(99, 114, 143, 0.18);
+    --dark-slate: #6b7794;
+    --slate: #4a5568;
+    --light-slate: #3a4a63;
+    --lightest-slate: #16233d;
+    --white: #0a192f;
+    --green: #0a9396;
+    --green-tint: rgba(10, 147, 150, 0.1);
+
+    --nav-bg: rgba(255, 255, 255, 0.85);
   }
 `;
 

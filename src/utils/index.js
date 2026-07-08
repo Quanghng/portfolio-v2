@@ -3,6 +3,15 @@ export const hex2rgba = (hex, alpha = 1) => {
   return `rgba(${r},${g},${b},${alpha})`;
 };
 
+// Filters markdown edges by the given language (`lang` frontmatter, defaulting
+// to 'en'). Falls back to the English entries when no localized ones exist.
+export const filterByLang = (edges, lang) => {
+  const localized = edges.filter(({ node }) => (node.frontmatter.lang || 'en') === lang);
+  return localized.length
+    ? localized
+    : edges.filter(({ node }) => (node.frontmatter.lang || 'en') === 'en');
+};
+
 export const navDelay = 1000;
 export const loaderDelay = 2000;
 
