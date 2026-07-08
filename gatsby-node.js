@@ -18,6 +18,7 @@ exports.createSchemaCustomization = ({ actions }) => {
       company: String
       cta: String
       lang: String
+      cover: File @fileByRelativePath
     }
   `);
 };
